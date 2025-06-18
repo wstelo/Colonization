@@ -1,2 +1,1 @@
-# Colonization
-
+# CollectingBots
