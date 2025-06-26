@@ -9,11 +9,19 @@ internal class ResourceView : MonoBehaviour
 
     private Sprite _currentSprite;
     private int startCountValue = 0;
+    private ResourceData _resourse;
 
-    public void Initialize(Sprite image)
+    private void OnDestroy()
     {
-        _currentSprite = image;
+        _resourse.AmountChanged -= UpdateAmount;
+    }
+
+    public void Initialize(ResourceData resourse)
+    {
+        _resourse = resourse;
+        _currentSprite = resourse.Sprite;
         _imageContainer.sprite = _currentSprite;
+        _resourse.AmountChanged += UpdateAmount;
 
         UpdateAmount(startCountValue);
     }

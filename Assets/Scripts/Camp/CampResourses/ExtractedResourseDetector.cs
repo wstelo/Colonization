@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class ExtractedResourseDetector : MonoBehaviour
 {
-    private ResourseCreator _resourseSystem;
+    private ResourseCollector _resourseSystem;
     private VisitorCollector _visitorCollector;
 
     private void Awake()
     {
-        _resourseSystem = GetComponent<ResourseCreator>();
+        _resourseSystem = GetComponent<ResourseCollector>();
         _visitorCollector = new VisitorCollector(_resourseSystem);
     }
 

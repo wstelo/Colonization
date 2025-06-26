@@ -16,7 +16,7 @@ public class WorkerWalkState : State
     public override void Enter()
     {
         _controller.StartWalkAnimation();
-        SetDesiredPosition(_worker.CurrentResourse);
+        SetDesiredPosition(_worker.CurrentTargetResourse);
         _collisionDetector.ResourseDetected += ChangeStateToMining;
     }
 
@@ -33,7 +33,7 @@ public class WorkerWalkState : State
 
     private void ChangeStateToMining(Resourse item)
     {
-        if(item.transform.position == _worker.CurrentResourse.transform.position)
+        if(item.transform.position == _worker.CurrentTargetResourse.transform.position)
         {
             _mover.StopMovement();
             StateMachine.SetState<WorkerMiningState>();

@@ -27,14 +27,15 @@ public class WorkerMiningState : State
     {
         var wait = new WaitForSeconds(_delayToMining);
 
-        while (_worker.CurrentResourse.CurrentHealth > 0)
+        while (_worker.CurrentTargetResourse.CurrentHealth > 0)
         {
             yield return wait;
 
-            _worker.CurrentResourse.Extract(_damage);
+            _worker.CurrentTargetResourse.Extract(_damage);
         }
 
-        _workerBags.PlaceProduct(_worker.CurrentResourse);
+        _workerBags.PlaceProduct(_worker.CurrentTargetResourse);
+        _worker.CurrentTargetResourse = null;
         StateMachine.SetState<WorkerReturnToBaseState>();
     }
 

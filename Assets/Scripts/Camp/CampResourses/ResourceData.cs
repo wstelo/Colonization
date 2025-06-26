@@ -31,5 +31,10 @@ public class ResourceData
     {
         Amount += amount;
     }
+
+    public void RemoveAmount (int amount)
+    {
+        Amount -= amount;
+    }
 }
 

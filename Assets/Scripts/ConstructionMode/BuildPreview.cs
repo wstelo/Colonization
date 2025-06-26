@@ -1,6 +1,5 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class BuildPreview : MonoBehaviour
@@ -11,43 +10,58 @@ public class BuildPreview : MonoBehaviour
 
     private List<Collider> _currentObstacles = new List<Collider>();
     private MeshRenderer _currentMaterial;
+    private bool _isActiveInstallationMode = true;
 
     public bool HasObstacle => _currentObstacles.Count > 0;
+
+    public event Action<BuildPreview, Worker> ConstructionEnded;
 
     private void Awake()
     {
         _currentMaterial = GetComponent<MeshRenderer>();
+        _currentMaterial.material = _standartMaterial;
     }
 
-    private void OnEnable()
+    public void EndedConstruction(Worker worker)
     {
+        ConstructionEnded?.Invoke(this, worker);
+    }
+
+    public void DisabledInstallationMode()
+    {
+        _isActiveInstallationMode = false;
         _currentMaterial.material = _standartMaterial;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-
-        if(((1 << other.gameObject.layer) & _obstacleMask.value) != 0)
+        if (_isActiveInstallationMode)
         {
-            _currentObstacles.Add(other);
-        }
+            if (((1 << other.gameObject.layer) & _obstacleMask.value) != 0)
+            {
+                _currentObstacles.Add(other);
+            }
 
-        if(_currentObstacles.Count > 0)
-        {
-            _currentMaterial.material = _redMaterial;
+            if (_currentObstacles.Count > 0)
+            {
+                _currentMaterial.material = _redMaterial;
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (((1 << other.gameObject.layer) & _obstacleMask.value) != 0)
+        if (_isActiveInstallationMode)
         {
-            _currentObstacles.Remove(other);
-        }
+            if (((1 << other.gameObject.layer) & _obstacleMask.value) != 0)
+            {
+                _currentObstacles.Remove(other);
+            }
 
-        if (_currentObstacles.Count == 0)
-        {
-            _currentMaterial.material = _standartMaterial;
+            if (_currentObstacles.Count == 0)
+            {
+                _currentMaterial.material = _standartMaterial;
+            }
         }
     }
 }

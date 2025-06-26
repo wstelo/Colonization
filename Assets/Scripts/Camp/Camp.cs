@@ -1,57 +1,82 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-[RequireComponent(typeof(WorkerCreator))]
+[RequireComponent(typeof(WorkerCreator), typeof(CampWorkerHandler))]
 
 public class Camp : MonoBehaviour
-{
-    [SerializeField] private ResourseHandler _resourseHandler;
-    [SerializeField] private int _timeToRefreshResourse = 1;
-    [SerializeField] private int _startWorkerCount = 3;
+{ 
+    [SerializeField] private ResourseCollector _resourseCollector;
+    [SerializeField] private Transform _resourseViewPosition;
+    [SerializeField] private CampConstructionButton _constructionButton;
 
-    private List<Worker> _unemployedWorkers = new List<Worker>();
+    private ResourseDataToBuilding _resourseData;
+    private SpawnPointHandler _spawnPointHandler;
+    private CampWorkerHandler _workerHandler;
+    private ResourseHandler _resourseHandler;
     private WorkerCreator _workerCreator;
+    private StateMachine _stateMachine;
+
+    public event Action <Camp> EnabledConstructionMode;
+    public event Action<Camp> DestroyedObject;
+    public event Action CampPreviewInstalled;
+
+    public BuildPreview CurrentBuildToConstruction { get; private set; } = null;
+    public Transform ResourseViewPosition => _resourseViewPosition;
 
     private void Awake()
     {
+        _constructionButton.ButtonPressed += EnableConstructionMode;
         _workerCreator = GetComponent<WorkerCreator>();
+        _workerHandler = GetComponent<CampWorkerHandler>();
     }
 
-    private void Start()
+    private void OnDestroy()
     {
-        StartCoroutine(SendWorkerToResourse());
-        _unemployedWorkers = _workerCreator.GetWorkers(_startWorkerCount);
+        _constructionButton.ButtonPressed -= EnableConstructionMode;
+        DestroyedObject?.Invoke(this);
     }
 
-    private IEnumerator SendWorkerToResourse()
-    {
-        var wait = new WaitForSeconds(_timeToRefreshResourse);
-
-        while (enabled)
-        {    
-            if (_resourseHandler.AvailableResourse != 0 && _unemployedWorkers.Count > 0)
-            {
-                Resourse nearestItem = _resourseHandler.GetRandomNearestResourse(transform.position);
-                Worker currentWorker = _unemployedWorkers[UnityEngine.Random.Range(0, _unemployedWorkers.Count)];
-                _unemployedWorkers.Remove(currentWorker);
-                currentWorker.SetCurrentResourse(nearestItem);
-                currentWorker.FinishedWork += RefreshUnemployedWorkers;
-            }
-
-            yield return wait;
-        }
-    }
-
-    private void RefreshUnemployedWorkers(Worker worker)
-    {
-        _unemployedWorkers.Add(worker);
-        worker.FinishedWork -= RefreshUnemployedWorkers;
-    }
-
-    public void Initialize(WorkerSpawner workerSpawner, ResourseHandler resourseHandler)
-    {
-        _workerCreator.SetCurrentSpawner(workerSpawner);
+    public void Initialize(WorkerSpawner workerSpawner, ResourseHandler resourseHandler, List<ResourceData> resourses, ResourseDataToBuilding resourseBuildingData, SpawnPointHandler spawnPointHandler)
+    { 
         _resourseHandler = resourseHandler;
+        _resourseCollector.SetCurrentResourses(resourses);
+        _resourseData = resourseBuildingData;
+        _spawnPointHandler = spawnPointHandler;
+        _workerCreator.Initialize(workerSpawner, _spawnPointHandler);
+        _workerHandler.Initialize(_resourseHandler, _workerCreator, _resourseCollector);
+
+        _stateMachine = new StateMachine();
+        _stateMachine.AddState(new CampIdleState(_stateMachine, _resourseCollector, _workerHandler, _workerCreator , _resourseData.GetResoursesToCharacter(), this));
+        _stateMachine.AddState(new CampBuildingState(_stateMachine, _resourseCollector, _workerHandler, _resourseData.GetResoursesToCamp(), _resourseData.GetResoursesToCharacter() ,this));
+        _stateMachine.SetState<CampIdleState>();
+    }
+
+    public void SetFirstWorker(Worker worker)
+    {
+        _workerHandler.SetFirstWorker(worker);
+        _workerCreator.SetPointToWorker(worker);
+    }
+
+    public void CreateFirstWorker()
+    {
+        _workerHandler.CreateFirstWorker();
+    }
+
+    public void SetBuildingToConstruction( BuildPreview buildPreview)
+    {
+        CurrentBuildToConstruction = buildPreview;
+        CampPreviewInstalled?.Invoke();
+    }
+
+    public void ResetBuildToConstruction()
+    {
+        CurrentBuildToConstruction = null;
+    }
+
+    private void EnableConstructionMode()
+    {
+        EnabledConstructionMode?.Invoke(this);
     }
 }

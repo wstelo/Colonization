@@ -16,7 +16,8 @@ public class Worker : MonoBehaviour
     public event Action <Worker> FinishedWork;
     public event Action AssignedNewTarget;
 
-    public Resourse CurrentResourse { get; private set; } = null;
+    public BuildPreview CurrentConstructionCamp { get; private set; } = null;
+    public Resourse CurrentTargetResourse { get; set; } = null;
     public Resourse CurrentResourseInBag => _workerBag.CurrentProduct;
     public Vector3 CurrentPositionOnCamp { get; private set; } = Vector3.zero;
     public Vector3 CurrentCampPosition { get; private set; } = Vector3.zero;
@@ -29,6 +30,16 @@ public class Worker : MonoBehaviour
         _mover = GetComponent<Mover>();
     }
 
+    private void OnEnable()
+    {
+        _colllisionDetector.BuildingDetected += EndedConstruction;
+    }
+
+    private void OnDisable()
+    {
+        _colllisionDetector.BuildingDetected -= EndedConstruction;
+    }
+
     private void Start()
     {
         _stateMachine = new StateMachine();
@@ -36,17 +47,26 @@ public class Worker : MonoBehaviour
         _stateMachine.AddState(new WorkerWalkState(_stateMachine, _animatorController, _mover, _colllisionDetector, this));
         _stateMachine.AddState(new WorkerReturnToBaseState(_stateMachine, _animatorController, _mover, this));
         _stateMachine.AddState(new WorkerIdleState(_stateMachine, _animatorController, this));
+        _stateMachine.AddState(new WorkerWalkToNewCampState(_stateMachine, _animatorController, _mover, this, _colllisionDetector));
         _stateMachine.SetState<WorkerIdleState>();
     }
 
     private void FixedUpdate()
     {
-        _stateMachine?.FixedUpdate();
+        _stateMachine?.FixedUpdate(); 
     }
 
     public void FinishWork()
     {
+        CurrentTargetResourse = null;
+        _workerBag.ResetCurrentResourse();
         FinishedWork?.Invoke(this);
+    }
+
+    public void SetConstructionCamp(BuildPreview target)
+    {
+        CurrentConstructionCamp = target;
+        _stateMachine.SetState<WorkerWalkToNewCampState>();
     }
 
     public void SetCurrentCamp(Vector3 campPosition, Vector3 positionOnCamp)
@@ -57,12 +77,20 @@ public class Worker : MonoBehaviour
 
     public void SetCurrentResourse(Resourse item)
     {
-        CurrentResourse = item;
+        CurrentTargetResourse = item;
         AssignedNewTarget?.Invoke();
     }
 
-    public void ClearCurrentResourse()
+    public void ClearCurrentBuilding()
     {
-        CurrentResourse = null;
+        CurrentConstructionCamp = null;
+    }
+
+    private void EndedConstruction(BuildPreview build)
+    {
+        if(build == CurrentConstructionCamp)
+        {
+            build.EndedConstruction(this);
+        }     
     }
 }

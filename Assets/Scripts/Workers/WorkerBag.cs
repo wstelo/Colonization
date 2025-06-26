@@ -4,21 +4,25 @@ public class WorkerBag : MonoBehaviour
 {
     [SerializeField] Transform _productPosition;
 
-    private Resourse _currentProduct = null;
-
-    public Resourse CurrentProduct => _currentProduct;
+    public Resourse CurrentProduct { get; private set; }
 
     public void PlaceProduct(Resourse item)
     {
-        _currentProduct = item;
-        _currentProduct.SetAsChild(_productPosition);
+        CurrentProduct = item;
+        CurrentProduct.SetAsChild(_productPosition);
+        
     }
 
     public Resourse GiveAwayCurrentProduct()
     {
-        _currentProduct.SetAsFree();
-        Resourse tempProduct = _currentProduct;
-        _currentProduct = null;
+        CurrentProduct.SetAsFree();
+        Resourse tempProduct = CurrentProduct;
+        CurrentProduct = null;
         return tempProduct;
+    }
+
+    public void ResetCurrentResourse()
+    {
+        CurrentProduct = null;
     }
 }

@@ -1,63 +1,93 @@
 using System;
-using System.Collections;
 using UnityEngine;
+
+[RequireComponent(typeof(NavMeshBaker), typeof(BuildPreviewer))]
 
 public class BuildConstructor : MonoBehaviour
 {
-    [SerializeField] private ResourseHandler _resourseHandler;
-    [SerializeField] private WorkerSpawner _workerSpawner;
+    [SerializeField] private BuildPreviewer _buildPreviewer;
     [SerializeField] private InputHandler _inputHandler;
     [SerializeField] private BuildConfig _buildConfig;
-    [SerializeField] private LayerMask _terrainMask;
+    [SerializeField] private CampFactory _campFactory;
 
-    private BuildPreview _currentPreviewBuilding;
-    private Camera _camera;
-    private Vector3 _currentMousePosition = Vector3.zero;
-    private bool _isActiveConstructionMode = false;
+    private BuildPreview _currentBuildPreview = null;
+    private Camp _currentCamp = null;
 
     public event Action BuildCreated;
 
-    private void Awake()
-    {
-        _camera = Camera.main;
-        _currentPreviewBuilding = Instantiate(_buildConfig.BuildPreviewPrefab, _currentMousePosition, Quaternion.identity);
-        _currentPreviewBuilding.gameObject.SetActive(false);
-    }
-
     private void Start()
     {
-        StartCoroutine(SetBuildingPoint());
+        CreateInitialCamp();
     }
 
-    private IEnumerator SetBuildingPoint()
+    private void CreateInitialCamp()
     {
-        _isActiveConstructionMode = true;
-        _inputHandler.LeftMouseButtonPressed += InstallNewCamp;
-        _currentPreviewBuilding.gameObject.SetActive(true);
+        _inputHandler.LeftMouseButtonPressed += InstallInitialCamp;
+        StartCoroutine(_buildPreviewer.Activate(_buildConfig));
+    }
 
-        while (_isActiveConstructionMode)
+    private void InstallInitialCamp()
+    {
+        if (_buildPreviewer.CurrentPreviewBuilding.HasObstacle == false)
         {
-            Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+            Camp currentCamp = _campFactory.GetNewCamp(_buildConfig, _buildPreviewer.CurrentMousePosition);
+            currentCamp.EnabledConstructionMode += CreateBuildPreview;
+            currentCamp.DestroyedObject += UnsubscribeFromAction;
+            currentCamp.CreateFirstWorker();
+            _buildPreviewer.DisableBuildPreviewer();
+            BuildCreated?.Invoke();
+            _inputHandler.LeftMouseButtonPressed -= InstallInitialCamp;
+        }
+    }
 
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _terrainMask))
-            {
-                _currentMousePosition = hit.point;
-                _currentPreviewBuilding.transform.position = _currentMousePosition;
-            }
-
-            yield return null;
+    private void CreateBuildPreview(Camp camp)
+    {
+        if (camp.CurrentBuildToConstruction != null)
+        {
+            _campFactory.DeleteBuildPreview(camp.CurrentBuildToConstruction);
         }
 
-        _inputHandler.LeftMouseButtonPressed -= InstallNewCamp;
+        _inputHandler.LeftMouseButtonPressed += InstallBuildPreview;
+        _inputHandler.RightMouseButtonPressed += CancelConstructionMode;
+        StartCoroutine(_buildPreviewer.Activate(_buildConfig));
+        _currentBuildPreview = _buildPreviewer.GetBuildPreview();
+        _currentCamp = camp;
     }
 
-    private void InstallNewCamp()
+    private void InstallBuildPreview()
     {
-        Destroy(_currentPreviewBuilding.gameObject);
-        Camp currentCamp = Instantiate(_buildConfig.BuildPrefab, _currentMousePosition, Quaternion.identity);
-        currentCamp.Initialize(_workerSpawner, _resourseHandler);
+        if (_buildPreviewer.CurrentPreviewBuilding.HasObstacle == false)
+        {
+            _currentCamp.SetBuildingToConstruction(_currentBuildPreview);
+            _currentBuildPreview.ConstructionEnded += FinishConstruction;
+            _currentBuildPreview.DisabledInstallationMode();
+            _buildPreviewer.DisableConstructionMode();
+            _inputHandler.LeftMouseButtonPressed -= InstallBuildPreview;
+            _inputHandler.RightMouseButtonPressed -= CancelConstructionMode;
+            _currentBuildPreview = null;
+            _currentCamp = null;
+        }
+    }
+
+    private void FinishConstruction(BuildPreview build, Worker currentWorker)
+    {
+        Camp currentCamp = _campFactory.GetNewCamp(_buildConfig, build.transform.position);
+        currentCamp.SetFirstWorker(currentWorker);
+        currentCamp.EnabledConstructionMode += CreateBuildPreview;
+        currentCamp.DestroyedObject += UnsubscribeFromAction;
+        build.ConstructionEnded -= FinishConstruction;
+        _buildPreviewer.DisableBuildPreviewer();
         BuildCreated?.Invoke();
-        _isActiveConstructionMode = false;
-        _currentPreviewBuilding.gameObject.SetActive(false);
+    }
+
+    private void UnsubscribeFromAction(Camp camp)
+    {
+        camp.EnabledConstructionMode -= CreateBuildPreview;
+        camp.DestroyedObject -= UnsubscribeFromAction;
+    }
+
+    private void CancelConstructionMode()
+    {
+        _buildPreviewer.DisableBuildPreviewer();
     }
 }
