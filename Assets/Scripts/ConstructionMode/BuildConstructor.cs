@@ -22,8 +22,8 @@ public class BuildConstructor : MonoBehaviour
 
     private void CreateInitialCamp()
     {
-        _inputHandler.LeftMouseButtonPressed += InstallInitialCamp;
-        StartCoroutine(_buildPreviewer.Activate(_buildConfig));
+        _inputHandler.SelectButtonPressed += InstallInitialCamp;
+        _buildPreviewer.Activate(_buildConfig);
     }
 
     private void InstallInitialCamp()
@@ -31,12 +31,9 @@ public class BuildConstructor : MonoBehaviour
         if (_buildPreviewer.CurrentPreviewBuilding.HasObstacle == false)
         {
             Camp currentCamp = _campFactory.GetNewCamp(_buildConfig, _buildPreviewer.CurrentMousePosition);
-            currentCamp.EnabledConstructionMode += CreateBuildPreview;
-            currentCamp.DestroyedObject += UnsubscribeFromAction;
+            InitializeConstruction(currentCamp);
             currentCamp.CreateFirstWorker();
-            _buildPreviewer.DisableBuildPreviewer();
-            BuildCreated?.Invoke();
-            _inputHandler.LeftMouseButtonPressed -= InstallInitialCamp;
+            _inputHandler.SelectButtonPressed -= InstallInitialCamp;
         }
     }
 
@@ -47,9 +44,9 @@ public class BuildConstructor : MonoBehaviour
             _campFactory.DeleteBuildPreview(camp.CurrentBuildToConstruction);
         }
 
-        _inputHandler.LeftMouseButtonPressed += InstallBuildPreview;
-        _inputHandler.RightMouseButtonPressed += CancelConstructionMode;
-        StartCoroutine(_buildPreviewer.Activate(_buildConfig));
+        _inputHandler.SelectButtonPressed += InstallBuildPreview;
+        _inputHandler.CancelButtonPressed += CancelConstructionMode;
+        _buildPreviewer.Activate(_buildConfig);
         _currentBuildPreview = _buildPreviewer.GetBuildPreview();
         _currentCamp = camp;
     }
@@ -60,10 +57,10 @@ public class BuildConstructor : MonoBehaviour
         {
             _currentCamp.SetBuildingToConstruction(_currentBuildPreview);
             _currentBuildPreview.ConstructionEnded += FinishConstruction;
-            _currentBuildPreview.DisabledInstallationMode();
+            _currentBuildPreview.DisableInstallationMode();
             _buildPreviewer.DisableConstructionMode();
-            _inputHandler.LeftMouseButtonPressed -= InstallBuildPreview;
-            _inputHandler.RightMouseButtonPressed -= CancelConstructionMode;
+            _inputHandler.SelectButtonPressed -= InstallBuildPreview;
+            _inputHandler.CancelButtonPressed -= CancelConstructionMode;
             _currentBuildPreview = null;
             _currentCamp = null;
         }
@@ -73,9 +70,14 @@ public class BuildConstructor : MonoBehaviour
     {
         Camp currentCamp = _campFactory.GetNewCamp(_buildConfig, build.transform.position);
         currentCamp.SetFirstWorker(currentWorker);
+        InitializeConstruction(currentCamp);
+        build.ConstructionEnded -= FinishConstruction;
+    }
+
+    private void InitializeConstruction(Camp currentCamp)
+    {
         currentCamp.EnabledConstructionMode += CreateBuildPreview;
         currentCamp.DestroyedObject += UnsubscribeFromAction;
-        build.ConstructionEnded -= FinishConstruction;
         _buildPreviewer.DisableBuildPreviewer();
         BuildCreated?.Invoke();
     }

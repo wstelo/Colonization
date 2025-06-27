@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(ResourseHealth))]
-
 public abstract class Resourse : MonoBehaviour
 {
     private ResourseHealth _health;
@@ -36,24 +35,24 @@ public abstract class Resourse : MonoBehaviour
         _health.TakeDamage(damage);
     }
 
-    private void ExtractObject()
-    {
-        Extracted?.Invoke(this);
-    }
-
     public void CollectedObject()
     {
         Collected?.Invoke(this);
     }
 
-    public void SetAsChild(Transform parentTransform)
+    public void PickedUp(Transform parentTransform)
     {
         transform.SetParent(parentTransform, true);
         transform.localPosition = Vector3.zero;
     }
 
-    public void SetAsFree()
+    public void Discard()
     {
         transform.SetParent(null, true);
+    }
+
+    private void ExtractObject()
+    {
+        Extracted?.Invoke(this);
     }
 }

@@ -27,7 +27,7 @@ public class BuildPreview : MonoBehaviour
         ConstructionEnded?.Invoke(this, worker);
     }
 
-    public void DisabledInstallationMode()
+    public void DisableInstallationMode()
     {
         _isActiveInstallationMode = false;
         _currentMaterial.material = _standartMaterial;

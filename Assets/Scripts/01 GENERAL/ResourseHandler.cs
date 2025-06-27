@@ -28,14 +28,7 @@ public class ResourseHandler : MonoBehaviour
 
     private void AddObject(Resourse item)
     {
-        _resourses.Add(item);
-        item.Extracted += RemoveExtractedResourse;
-    }
-
-    public void RemoveExtractedResourse(Resourse resourse)
-    {
-        _resourses.Remove(resourse);
-        resourse.Extracted -= RemoveExtractedResourse;
+        _resourses.Add(item);  
     }
 
     public Resourse GetRandomNearestResourse(Vector3 nearestPosition)

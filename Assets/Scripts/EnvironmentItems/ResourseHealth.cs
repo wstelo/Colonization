@@ -18,12 +18,16 @@ public class ResourseHealth : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        CurrentValue -= damage;
-        ValueChanged?.Invoke(CurrentValue);
-
-        if (CurrentValue <= 0)
+        if(damage > 0)
         {
-            Ended?.Invoke();
+            CurrentValue = Mathf.Clamp(CurrentValue - damage, 0, _maxValue);
+            ValueChanged?.Invoke(CurrentValue);
+
+            if (CurrentValue <= 0)
+            {
+                CurrentValue = 0;
+                Ended?.Invoke();
+            }          
         }
     }
 

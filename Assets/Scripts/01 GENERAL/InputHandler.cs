@@ -12,8 +12,8 @@ public class InputHandler : MonoBehaviour
     private const KeyCode KeyCodeMinus = KeyCode.KeypadMinus;
 
     public event Action <float> OnValueChanged;
-    public event Action LeftMouseButtonPressed;
-    public event Action RightMouseButtonPressed;
+    public event Action SelectButtonPressed;
+    public event Action CancelButtonPressed;
     public event Action KeyPadPlusButtonPressed;
     public event Action KeyPadMinusButtonPressed;
 
@@ -34,7 +34,7 @@ public class InputHandler : MonoBehaviour
         
         if(Input.GetMouseButtonDown(LeftMouseButtonIndex))
         {
-            LeftMouseButtonPressed?.Invoke();
+            SelectButtonPressed?.Invoke();
         }
 
         if(Input.GetKeyDown(KeyCodePlus))
@@ -49,7 +49,7 @@ public class InputHandler : MonoBehaviour
 
         if (Input.GetMouseButtonDown(RightMouseButtonIndex))
         {
-            RightMouseButtonPressed?.Invoke();
+            CancelButtonPressed?.Invoke();
         }
     }
 }

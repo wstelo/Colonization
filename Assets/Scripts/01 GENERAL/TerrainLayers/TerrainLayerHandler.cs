@@ -28,11 +28,6 @@ public class TerrainLayerHandler : MonoBehaviour
         float zCoordinate = zValue * _alphaMapHeight;
         float value = _alphaMap[(int)zCoordinate, (int)xCoordinate, layerIndex];     
        
-        if (value > _minValue)
-        {
-            return true;
-        }
-
-        return false;
+        return value > _minValue;
     }
 }

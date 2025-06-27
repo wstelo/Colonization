@@ -9,13 +9,13 @@ public class WorkerBag : MonoBehaviour
     public void PlaceProduct(Resourse item)
     {
         CurrentProduct = item;
-        CurrentProduct.SetAsChild(_productPosition);
+        CurrentProduct.PickedUp(_productPosition);
         
     }
 
     public Resourse GiveAwayCurrentProduct()
     {
-        CurrentProduct.SetAsFree();
+        CurrentProduct.Discard();
         Resourse tempProduct = CurrentProduct;
         CurrentProduct = null;
         return tempProduct;

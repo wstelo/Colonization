@@ -1,30 +1,17 @@
 using UnityEngine;
 
-public class WorkerSpawner : CharacterSpawner<Worker>
+public class WorkerSpawner : MonoBehaviour
 {
     [SerializeField] private SpawnPointHandler _spawnPointHandler;
+    [SerializeField] private Worker _prefab;
+
+    private Vector3 _position = new Vector3(0, 0, 0);
 
     public Worker GetNewWorker(Transform spawnPoint)
     {
         Vector3 newSpawnPoint = _spawnPointHandler.GetPointOnNavMesh(spawnPoint.position);
-        var worker = Pool.Get();
-        worker.gameObject.SetActive(false);
-        worker.transform.position = newSpawnPoint;
-        worker.gameObject.SetActive(true);
+        Worker worker = Instantiate(_prefab, newSpawnPoint, Quaternion.identity, transform);
 
         return worker;
     }
-
-    public override void ReleasedObject(Worker item)
-    {
-        base.ReleasedObject(item);
-        Pool.Release(item);
-    }
-
-    public override void Initialize(Worker item)
-    {
-        base.Initialize(item);
-        item.gameObject.SetActive(true);
-    }
-
 }

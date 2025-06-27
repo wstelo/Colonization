@@ -3021,9 +3021,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f253dcaa867f774b99479e5a8ef9e54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: -8706121051136362890, guid: 9319a986a29bb584bad5eb650845a692, type: 3}
-  _poolCapacity: 5
   _spawnPointHandler: {fileID: 1496507269}
+  _prefab: {fileID: -8706121051136362890, guid: 9319a986a29bb584bad5eb650845a692, type: 3}
 --- !u!4 &1721482254
 Transform:
   m_ObjectHideFlags: 0

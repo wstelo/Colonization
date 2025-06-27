@@ -17,7 +17,28 @@ public class BuildPreviewer : MonoBehaviour
         _camera = Camera.main;
     }
 
-    public IEnumerator Activate(BuildConfig buildConfig)
+    public void Activate(BuildConfig buildConfig)
+    {
+        StartCoroutine(EnablePreviewMode(buildConfig));
+    }
+
+    public void DisableConstructionMode()
+    {
+        _isActiveConstructionMode = false;
+    }
+
+    public BuildPreview GetBuildPreview()
+    {
+        return CurrentPreviewBuilding;
+    }
+
+    public void DisableBuildPreviewer()
+    {
+        _isActiveConstructionMode = false;
+        _campFactory.DeleteBuildPreview(CurrentPreviewBuilding);
+    }
+
+    private IEnumerator EnablePreviewMode(BuildConfig buildConfig)
     {
         CurrentPreviewBuilding = null;
         _isActiveConstructionMode = true;
@@ -35,21 +56,5 @@ public class BuildPreviewer : MonoBehaviour
 
             yield return null;
         }
-    }
-
-    public void DisableConstructionMode()
-    {
-        _isActiveConstructionMode = false;
-    }
-
-    public BuildPreview GetBuildPreview()
-    {
-        return CurrentPreviewBuilding;
-    }
-
-    public void DisableBuildPreviewer()
-    {
-        _isActiveConstructionMode = false;
-        _campFactory.DeleteBuildPreview(CurrentPreviewBuilding);
     }
 }

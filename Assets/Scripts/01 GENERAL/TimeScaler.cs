@@ -8,6 +8,10 @@ public class TimeScaler : MonoBehaviour
 
     private int _timeDelta = 5;
 
+    /// <summary>
+    /// ///////////// TIMESCALE CLASS - янгдюм хяйкчвхрекэмн дкъ рнцн, врн аш сяйнпхрэ бхден дкъ ядювх дг. 
+    /// </summary>
+
     private void OnEnable()
     {
         _inputHandler.KeyPadPlusButtonPressed += IncreaseValue;
@@ -22,7 +26,7 @@ public class TimeScaler : MonoBehaviour
 
     private void IncreaseValue()
     {
-        Time.timeScale += _timeDelta;
+        Time.timeScale += _timeDelta;       
     }
 
     private void DecreaseValue()
