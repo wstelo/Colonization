@@ -9,7 +9,7 @@ public class TimeScaler : MonoBehaviour
     private int _timeDelta = 5;
 
     /// <summary>
-    /// ///////////// TIMESCALE CLASS - янгдюм хяйкчвхрекэмн дкъ рнцн, врн аш сяйнпхрэ бхден дкъ ядювх дг. 
+    /// ///////////// TIMESCALE CLASS - янгдюм хяйкчвхрекэмн дкъ рнцн, врн аш сяйнпхрэ бхден дкъ ядювх дг Х ДКЪ РЕЯРНБ ХЦПШ, ВРН АШ МЕ ФДЮРЭ ДНКЦН.
     /// </summary>
 
     private void OnEnable()

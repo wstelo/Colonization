@@ -1,30 +1,29 @@
-using System;
 using System.Collections.Generic;
+using System;
 
-public class CampBuildingState : State
+public class ConstructionBehavior : IBaseBehavior
 {
-    private CampWorkerHandler _workerHandler;
-    private ResourseCollector _resourseCollector;
-    private Camp _camp;
-
     private Dictionary<Type, int> _resoursesToNewBuilding = new Dictionary<Type, int>();
     private Dictionary<Type, int> _resoursesToNewWorker = new Dictionary<Type, int>();
+    private ResourseCollector _resourseCollector;
+    private CampWorkerHandler _workerHandler;
+    private Camp _camp;
 
-    public CampBuildingState(StateMachine stateMachine, ResourseCollector collector, CampWorkerHandler workerHandler, Dictionary<Type, int> resoursesToNewBuilding, Dictionary<Type, int> resoursesToNewWorker, Camp camp) : base(stateMachine)
+    public ConstructionBehavior(CampWorkerHandler workerHandler, ResourseCollector resourseCollector, Camp camp, Dictionary<Type, int> resoursesToNewBuilding, Dictionary<Type, int> resoursesToNewWorker)
     {
-        _resourseCollector = collector;
         _workerHandler = workerHandler;
+        _resourseCollector = resourseCollector;
+        _camp = camp;
         _resoursesToNewBuilding = resoursesToNewBuilding;
         _resoursesToNewWorker = resoursesToNewWorker;
-        _camp = camp;
     }
 
-    public override void Enter()
+    public void StartBehavior()
     {
         _resourseCollector.AmountChanged += TrySendWorkerToBuildConstruction;
     }
 
-    public override void Exit()
+    public void StopBehavior()
     {
         _resourseCollector.AmountChanged -= TrySendWorkerToBuildConstruction;
     }
@@ -34,8 +33,7 @@ public class CampBuildingState : State
         if (_resourseCollector.TryGetResourseValue(_resoursesToNewBuilding) && _workerHandler.WorkerCount > 1)
         {
             _workerHandler.StartCoroutine(_workerHandler.SendWorkerToCampConstruction(_camp.CurrentBuildToConstruction, _resoursesToNewBuilding));
-            _camp.ResetBuildToConstruction();
-            StateMachine.SetState<CampIdleState>();
+            _camp.ClearBuildToConstruction();
         }
         else if (_workerHandler.WorkerCount <= 1 && _resourseCollector.TryGetResourseValue(_resoursesToNewWorker))
         {

@@ -1,12 +1,11 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 [RequireComponent(typeof(WorkerCreator), typeof(CampWorkerHandler))]
 
 public class Camp : MonoBehaviour
-{ 
+{
     [SerializeField] private ResourseCollector _resourseCollector;
     [SerializeField] private Transform _resourseViewPosition;
     [SerializeField] private CampConstructionButton _constructionButton;
@@ -16,11 +15,12 @@ public class Camp : MonoBehaviour
     private CampWorkerHandler _workerHandler;
     private ResourseHandler _resourseHandler;
     private WorkerCreator _workerCreator;
-    private StateMachine _stateMachine;
+    private IBaseBehavior _baseBehavior;
+    private ConstructionBehavior _constructionBehavior;
+    private WorkerCreateBehavior _workerCreateBehavior;
 
-    public event Action <Camp> EnabledConstructionMode;
+    public event Action<Camp> EnabledConstructionMode;
     public event Action<Camp> DestroyedObject;
-    public event Action CampPreviewInstalled;
 
     public BuildPreview CurrentBuildToConstruction { get; private set; } = null;
     public Transform ResourseViewPosition => _resourseViewPosition;
@@ -39,7 +39,7 @@ public class Camp : MonoBehaviour
     }
 
     public void Initialize(WorkerSpawner workerSpawner, ResourseHandler resourseHandler, List<ResourceData> resourses, ResourseDataToBuilding resourseBuildingData, SpawnPointHandler spawnPointHandler)
-    { 
+    {
         _resourseHandler = resourseHandler;
         _resourseCollector.SetCurrentResourses(resourses);
         _resourseData = resourseBuildingData;
@@ -47,10 +47,9 @@ public class Camp : MonoBehaviour
         _workerCreator.Initialize(workerSpawner, _spawnPointHandler);
         _workerHandler.Initialize(_resourseHandler, _workerCreator, _resourseCollector);
 
-        _stateMachine = new StateMachine();
-        _stateMachine.AddState(new CampIdleState(_stateMachine, _resourseCollector, _workerHandler, _workerCreator , _resourseData.GetResoursesToCharacter(), this));
-        _stateMachine.AddState(new CampBuildingState(_stateMachine, _resourseCollector, _workerHandler, _resourseData.GetResoursesToCamp(), _resourseData.GetResoursesToCharacter() ,this));
-        _stateMachine.SetState<CampIdleState>();
+        _constructionBehavior = new ConstructionBehavior(_workerHandler, _resourseCollector, this, _resourseData.GetResoursesToCamp(), _resourseData.GetResoursesToCharacter());
+        _workerCreateBehavior = new WorkerCreateBehavior(_resourseCollector, _workerHandler, _workerCreator, _resourseData.GetResoursesToCharacter());
+        SetBehavior(_workerCreateBehavior);
     }
 
     public void SetFirstWorker(Worker worker)
@@ -64,19 +63,34 @@ public class Camp : MonoBehaviour
         _workerHandler.CreateFirstWorker();
     }
 
-    public void SetBuildingToConstruction( BuildPreview buildPreview)
+    public void SetBuildingToConstruction(BuildPreview buildPreview)
     {
         CurrentBuildToConstruction = buildPreview;
-        CampPreviewInstalled?.Invoke();
+        SetBehavior(_constructionBehavior);
     }
 
-    public void ResetBuildToConstruction()
+    public void ClearBuildToConstruction()
     {
         CurrentBuildToConstruction = null;
+        SetBehavior(_workerCreateBehavior);
     }
 
     private void EnableConstructionMode()
     {
         EnabledConstructionMode?.Invoke(this);
+    }
+
+    private void SetBehavior<T>(T behavior) where T : IBaseBehavior
+    {
+        var type = typeof(T);
+
+        if (_baseBehavior?.GetType() == type)
+        {
+            return;
+        }
+
+        _baseBehavior?.StopBehavior();
+        _baseBehavior = behavior;
+        _baseBehavior.StartBehavior();
     }
 }

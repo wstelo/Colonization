@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sprite: {fileID: 21300000, guid: 1cf4f6a0a69e3ba4e9488069f5b6af6b, type: 3}
   _prefab: {fileID: 9106769150085808251, guid: 0fd5be61d8c00de419d45d6bf745a69c, type: 3}
+  _resourceType: 1

@@ -30,14 +30,13 @@ public class BuildPreview : MonoBehaviour
     public void DisableInstallationMode()
     {
         _isActiveInstallationMode = false;
-        _currentMaterial.material = _standartMaterial;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (_isActiveInstallationMode)
         {
-            if (((1 << other.gameObject.layer) & _obstacleMask.value) != 0)
+            if (_obstacleMask.IsContains(other.gameObject.layer))
             {
                 _currentObstacles.Add(other);
             }
@@ -53,7 +52,7 @@ public class BuildPreview : MonoBehaviour
     {
         if (_isActiveInstallationMode)
         {
-            if (((1 << other.gameObject.layer) & _obstacleMask.value) != 0)
+            if (_obstacleMask.IsContains(other.gameObject.layer))
             {
                 _currentObstacles.Remove(other);
             }

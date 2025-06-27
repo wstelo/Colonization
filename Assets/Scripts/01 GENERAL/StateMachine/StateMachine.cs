@@ -6,8 +6,6 @@ public class StateMachine
     private State _currentState;
     private Dictionary<Type, State> _states = new Dictionary<Type, State>();
 
-    public State CurrentState => _currentState;      /////////////////////////////////
-
     public void AddState(State state)
     {
         _states.Add(state.GetType(), state);

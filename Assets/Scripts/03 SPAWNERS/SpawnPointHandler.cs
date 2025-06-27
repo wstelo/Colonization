@@ -38,7 +38,7 @@ public class SpawnPointHandler : MonoBehaviour
             Vector3 spawnPoint = GetPointOnArea(layerIndex);
             Physics.Raycast(GetRayFromPoint(spawnPoint), out hit, Mathf.Infinity, _terrainMask | _obstacleMask);
 
-            if (((1 << hit.collider.gameObject.layer) & _terrainMask.value) != 0)
+            if (_terrainMask.IsContains(hit.collider.gameObject.layer))
             {
                 Collider[] hits = new Collider[10];
                 int hitsCount = Physics.OverlapSphereNonAlloc(hit.point, _obstacleRadius, hits, _obstacleMask);
