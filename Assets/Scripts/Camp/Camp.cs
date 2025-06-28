@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Camp : MonoBehaviour
 {
-    [SerializeField] private ResourseCollector _resourseCollector;
+    [SerializeField] private ResourseCollector ResourseCollector;
     [SerializeField] private Transform _resourseViewPosition;
     [SerializeField] private CampConstructionButton _constructionButton;
 
@@ -22,6 +22,7 @@ public class Camp : MonoBehaviour
     public event Action<Camp> EnabledConstructionMode;
     public event Action<Camp> DestroyedObject;
 
+    
     public BuildPreview CurrentBuildToConstruction { get; private set; } = null;
     public Transform ResourseViewPosition => _resourseViewPosition;
 
@@ -41,14 +42,14 @@ public class Camp : MonoBehaviour
     public void Initialize(WorkerSpawner workerSpawner, ResourseHandler resourseHandler, List<ResourceData> resourses, ResourseDataToBuilding resourseBuildingData, SpawnPointHandler spawnPointHandler)
     {
         _resourseHandler = resourseHandler;
-        _resourseCollector.SetCurrentResourses(resourses);
+        ResourseCollector.SetCurrentResourses(resourses);
         _resourseData = resourseBuildingData;
         _spawnPointHandler = spawnPointHandler;
         _workerCreator.Initialize(workerSpawner, _spawnPointHandler);
-        _workerHandler.Initialize(_resourseHandler, _workerCreator, _resourseCollector);
+        _workerHandler.Initialize(_resourseHandler, _workerCreator, ResourseCollector);
 
-        _constructionBehavior = new ConstructionBehavior(_workerHandler, _resourseCollector, this, _resourseData.GetResoursesToCamp(), _resourseData.GetResoursesToCharacter());
-        _workerCreateBehavior = new WorkerCreateBehavior(_resourseCollector, _workerHandler, _workerCreator, _resourseData.GetResoursesToCharacter());
+        _constructionBehavior = new ConstructionBehavior(_workerHandler, ResourseCollector, this, _resourseData.GetResoursesToCamp(), _resourseData.GetResoursesToCharacter());
+        _workerCreateBehavior = new WorkerCreateBehavior(ResourseCollector, _workerHandler, _workerCreator, _resourseData.GetResoursesToCharacter());
         SetBehavior(_workerCreateBehavior);
     }
 

@@ -3,13 +3,13 @@ using System;
 
 public class ConstructionBehavior : IBaseBehavior
 {
-    private Dictionary<Type, int> _resoursesToNewBuilding = new Dictionary<Type, int>();
-    private Dictionary<Type, int> _resoursesToNewWorker = new Dictionary<Type, int>();
+    private Dictionary<ResourseType, int> _resoursesToNewBuilding = new Dictionary<ResourseType, int>();
+    private Dictionary<ResourseType, int> _resoursesToNewWorker = new Dictionary<ResourseType, int>();
     private ResourseCollector _resourseCollector;
     private CampWorkerHandler _workerHandler;
     private Camp _camp;
 
-    public ConstructionBehavior(CampWorkerHandler workerHandler, ResourseCollector resourseCollector, Camp camp, Dictionary<Type, int> resoursesToNewBuilding, Dictionary<Type, int> resoursesToNewWorker)
+    public ConstructionBehavior(CampWorkerHandler workerHandler, ResourseCollector resourseCollector, Camp camp, Dictionary<ResourseType, int> resoursesToNewBuilding, Dictionary<ResourseType, int> resoursesToNewWorker)
     {
         _workerHandler = workerHandler;
         _resourseCollector = resourseCollector;

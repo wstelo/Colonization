@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 [CreateAssetMenu(fileName = "New Build", menuName = "Build / New Build")]
 
@@ -6,13 +8,13 @@ public class BuildConfig : ScriptableObject
 {
     [SerializeField] private BuildPreview _buildPreviewPrefab;
     [SerializeField] private Camp _prefab;
-    [SerializeField] private int _requiredTreeCount;
-    [SerializeField] private int _requiredStoneCount;
-    [SerializeField] private int _requiredIronCount;
+    [SerializeField] private List<ResourseEntry> _resourceList;
 
-    public int RequiredTreeCount => _requiredTreeCount;
-    public int RequiredStoneCount => _requiredStoneCount;
-    public int RequiredIronCount => _requiredIronCount;
+    public Dictionary<ResourseType, int> GetRequiredResourses()
+    {
+        return _resourceList.ToDictionary(x => x.Key, x => x.Value);
+    }
+
     public BuildPreview BuildPreviewPrefab => _buildPreviewPrefab;
     public Camp BuildPrefab => _prefab;
 }

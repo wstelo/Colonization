@@ -7,8 +7,8 @@ public class ResourceConfig : ScriptableObject
 {
     [SerializeField] private Sprite _sprite;
     [SerializeField] private Resourse _prefab;
-    [SerializeField] private ResourceType _resourceType;
+    [SerializeField] private ResourseType _resourceType;
     
     public Sprite Sprite => _sprite;
-    public Type Type => _prefab.GetType();
+    public ResourseType Type => _resourceType;
 }

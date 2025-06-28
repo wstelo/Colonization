@@ -9,12 +9,14 @@ public abstract class Resourse : MonoBehaviour
     public event Action<Resourse> Extracted;
     public event Action<Resourse> Collected;
 
+    public ResourseType ResourseType { get; private set; }
     public float CurrentHealth => _health.CurrentValue;
     public float MaxHealth => _health.MaxValue;
 
     private void Awake()
     {
         _health = GetComponent<ResourseHealth>();
+        SetType();
     }
 
     private void OnEnable()
@@ -54,5 +56,17 @@ public abstract class Resourse : MonoBehaviour
     private void ExtractObject()
     {
         Extracted?.Invoke(this);
+    }
+
+
+    private void SetType()
+    {
+        foreach (ResourseType type in Enum.GetValues(typeof(ResourseType)))
+        {
+            if (this.GetType().ToString() == type.ToString())
+            {
+                ResourseType = type;
+            }
+        }
     }
 }

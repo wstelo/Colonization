@@ -4,12 +4,12 @@ using System;
 
 public class WorkerCreateBehavior : IBaseBehavior
 {
-    private Dictionary<Type, int> _resoursesToNewWorker = new Dictionary<Type, int>();
+    private Dictionary<ResourseType, int> _resoursesToNewWorker = new Dictionary<ResourseType, int>();
     private CampWorkerHandler _workerHandler;
     private ResourseCollector _collector;
     private WorkerCreator _workerCreator;
 
-    public WorkerCreateBehavior(ResourseCollector collector, CampWorkerHandler workerHandler, WorkerCreator workerCreator, Dictionary<Type, int> resoursesToNewWorker)
+    public WorkerCreateBehavior(ResourseCollector collector, CampWorkerHandler workerHandler, WorkerCreator workerCreator, Dictionary<ResourseType, int> resoursesToNewWorker)
     {
         _resoursesToNewWorker = resoursesToNewWorker;
         _workerHandler = workerHandler;

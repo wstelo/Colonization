@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: CharacterType1
   m_EditorClassIdentifier: 
   _prefab: {fileID: -8706121051136362890, guid: 9319a986a29bb584bad5eb650845a692, type: 3}
-  _requiredTreeCount: 1
-  _requiredStoneCount: 1
-  _requiredIronCount: 1
+  _resourceList:
+  - _key: 0
+    _value: 2
+  - _key: 1
+    _value: 2
+  - _key: 2
+    _value: 2

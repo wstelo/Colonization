@@ -5,7 +5,7 @@ using UnityEngine;
 public class ResourseCollector : MonoBehaviour
 {
     private int _resourseChangeDelta = 1;
-    private Dictionary<Type, ResourceData> _resourses = new Dictionary<Type, ResourceData>();
+    private Dictionary<ResourseType, ResourceData> _resourses = new Dictionary<ResourseType, ResourceData>();
 
     public event Action AmountChanged;
 
@@ -17,7 +17,7 @@ public class ResourseCollector : MonoBehaviour
         }
     }
 
-    public bool TryGetResourseValue(Dictionary<Type, int> resourses)
+    public bool TryGetResourseValue(Dictionary<ResourseType, int> resourses)
     {
         foreach(var item in resourses)
         {
@@ -33,7 +33,7 @@ public class ResourseCollector : MonoBehaviour
         return true;
     }
 
-    public void RemoveAmount(Dictionary<Type, int> resourses)
+    public void RemoveAmount(Dictionary<ResourseType, int> resourses)
     {
         foreach (var item in resourses)
         {
@@ -48,7 +48,7 @@ public class ResourseCollector : MonoBehaviour
 
     public void AddAmount(Resourse resourse)
     {
-        if(_resourses.TryGetValue(resourse.GetType(), out ResourceData resourseData))
+        if(_resourses.TryGetValue(resourse.ResourseType, out ResourceData resourseData))
         {
             resourseData.AddAmount(_resourseChangeDelta);
         }

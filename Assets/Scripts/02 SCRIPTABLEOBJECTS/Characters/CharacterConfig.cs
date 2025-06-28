@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Character", menuName = "Character / NewCharacter")]
@@ -5,12 +7,12 @@ using UnityEngine;
 public class CharacterConfig : ScriptableObject
 {
     [SerializeField] private Worker _prefab;
-    [SerializeField] private int _requiredTreeCount;
-    [SerializeField] private int _requiredStoneCount;
-    [SerializeField] private int _requiredIronCount;
+    [SerializeField] private List<ResourseEntry> _resourceList;
 
-    public int RequiredTreeCount => _requiredTreeCount;
-    public int RequiredStoneCount => _requiredStoneCount;
-    public int RequiredIronCount => _requiredIronCount;
+    public Dictionary<ResourseType, int> GetRequiredResourses()
+    {
+        return _resourceList.ToDictionary(x => x.Key, x => x.Value);
+    }
+
     public Worker BuildPrefab => _prefab;
 }

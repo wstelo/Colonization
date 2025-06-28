@@ -26,7 +26,7 @@ public class CampWorkerHandler : MonoBehaviour
         _collector = resourseCollector;
     }
 
-    public IEnumerator SendWorkerToCampConstruction(BuildPreview currentTarget, Dictionary<Type, int> resoursesToNewBuilding)
+    public IEnumerator SendWorkerToCampConstruction(BuildPreview currentTarget, Dictionary<ResourseType, int> resoursesToNewBuilding)
     {
         float timeToRefreshFreeWorker = 0.1f;
         var wait = new WaitForSeconds(timeToRefreshFreeWorker);
@@ -48,7 +48,7 @@ public class CampWorkerHandler : MonoBehaviour
         }
     }
 
-    public void TryCreateNewWorker(Dictionary<Type, int> resoursesToNewWorker)
+    public void TryCreateNewWorker(Dictionary<ResourseType, int> resoursesToNewWorker)
     {
         int newWorkerCount = 1;
 

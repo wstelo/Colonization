@@ -8,7 +8,7 @@ public class ResourceData
     
     public event Action<int> AmountChanged;
 
-    public ResourceData(Type type, Sprite image)
+    public ResourceData(ResourseType type, Sprite image)
     {
         Sprite = image;
         Type = type;
@@ -16,7 +16,7 @@ public class ResourceData
     }
 
     public Sprite Sprite { get; private set; }
-    public Type Type { get; private set; }
+    public ResourseType Type { get; private set; }
     public int Amount
     {
         get => _amount;

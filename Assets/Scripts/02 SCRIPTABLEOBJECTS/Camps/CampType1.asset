@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buildPreviewPrefab: {fileID: 4356456057297789073, guid: d082f8e3ba52d99459f89de3d9170018, type: 3}
   _prefab: {fileID: 2541077617129030973, guid: 145d1f2b5aa1a2340a2dc1cbb5f5f507, type: 3}
-  _requiredTreeCount: 5
-  _requiredStoneCount: 5
-  _requiredIronCount: 5
+  _resourceList:
+  - _key: 0
+    _value: 5
+  - _key: 1
+    _value: 5
+  - _key: 2
+    _value: 5
